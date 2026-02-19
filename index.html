@@ -1,0 +1,487 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DevStudio Pro - محرر أكواد احترافي</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material-darker.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/foldgutter.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/dialog/dialog.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Cairo:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- STRESS ALERT -->
+<div class="stress-alert" id="stressAlert">
+  <button class="stress-alert-close" onclick="closeStressAlert()"><i class="fas fa-times"></i></button>
+  <i class="fas fa-exclamation-triangle"></i>
+  <div class="stress-alert-content">
+    <h4>تنبيه: مستوى توتر مرتفع!</h4>
+    <p>لاحظنا زيادة في معدل الأخطاء وانخفاض سرعة الكتابة. ننصح بأخذ استراحة قصيرة.</p>
+  </div>
+</div>
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <div class="logo"><i class="fas fa-code"></i> DevStudio Pro</div>
+  <div class="toolbar-separator"></div>
+  <button class="toolbar-btn" onclick="toggleSidePanel('explorer')" title="مستكشف الملفات"><i class="fas fa-folder"></i> <span class="toolbar-label">ملفات</span></button>
+  <button class="toolbar-btn" onclick="runPreview()" title="تشغيل"><i class="fas fa-play"></i> <span class="toolbar-label">تشغيل</span></button>
+  <button class="toolbar-btn" onclick="togglePreview()" title="معاينة"><i class="fas fa-eye"></i> <span class="toolbar-label">معاينة</span></button>
+  <div class="toolbar-separator"></div>
+  <button class="toolbar-btn" onclick="createNewFileDialog()" title="ملف جديد"><i class="fas fa-file-circle-plus"></i> <span class="toolbar-label">جديد</span></button>
+  <button class="toolbar-btn" onclick="saveCurrentFile()" title="حفظ"><i class="fas fa-download"></i> <span class="toolbar-label">حفظ</span></button>
+  <button class="toolbar-btn" onclick="document.getElementById('fileLoader').click()" title="تحميل ملف"><i class="fas fa-upload"></i> <span class="toolbar-label">تحميل</span></button>
+  <input type="file" id="fileLoader" style="display:none" accept=".html,.htm,.css,.js,.txt,.json,.xml,.py,.mjs" multiple onchange="loadFiles(event)">
+  <div class="toolbar-separator hide-mobile"></div>
+  <button class="toolbar-btn hide-mobile" onclick="toggleZenMode()" id="zenBtn" title="وضع التركيز"><i class="fas fa-spa"></i> <span class="toolbar-label">Zen Mode</span></button>
+  <button class="toolbar-btn hide-mobile" onclick="showMentalModel()" title="خريطة ذهنية"><i class="fas fa-project-diagram"></i> <span class="toolbar-label">خريطة ذهنية</span></button>
+  <button class="toolbar-btn hide-mobile" onclick="showCodeChunking()" title="تقسيم الكود"><i class="fas fa-puzzle-piece"></i> <span class="toolbar-label">تقسيم الكود</span></button>
+  <button class="toolbar-btn hide-mobile" onclick="toggleTapShortcuts()" title="Tap System"><i class="fas fa-hand-pointer"></i> <span class="toolbar-label">Tap System</span></button>
+  <div class="toolbar-right">
+    <button class="toolbar-btn hide-mobile" onclick="toggleDashboard()" title="لوحة المراقبة"><i class="fas fa-chart-line"></i> <span class="toolbar-label">المراقبة</span></button>
+    <button class="toolbar-btn hide-mobile" onclick="toggleVisualScoping()" id="scopeBtn" title="التركيز البصري"><i class="fas fa-crosshairs"></i> <span class="toolbar-label">تركيز بصري</span></button>
+  </div>
+</div>
+<!-- MAIN -->
+<div class="main-container">
+  <!-- SIDEBAR ICONS -->
+  <div class="sidebar">
+    <button class="sidebar-btn active" onclick="toggleSidePanel('explorer')" title="مستكشف الملفات"><i class="fas fa-copy"></i></button>
+    <button class="sidebar-btn" onclick="toggleSidePanel('features')" title="الميزات الذكية"><i class="fas fa-brain"></i><span class="badge"></span></button>
+    <button class="sidebar-btn" onclick="toggleSidePanel('search')" title="بحث"><i class="fas fa-search"></i></button>
+    <button class="sidebar-btn" onclick="toggleSidePanel('git')" title="التحكم بالمصادر"><i class="fas fa-code-branch"></i></button>
+    <div style="flex:1"></div>
+    <button class="sidebar-btn" onclick="toggleSidePanel('settings')" title="الإعدادات"><i class="fas fa-cog"></i></button>
+  </div>
+  <!-- SIDE PANEL -->
+  <div class="side-panel open" id="sidePanel">
+    <!-- Explorer Panel -->
+    <div id="panelExplorer">
+      <div class="side-panel-header">مستكشف الملفات <i class="fas fa-ellipsis-h" style="cursor:pointer;font-size:12px;"></i></div>
+      <div class="side-panel-content">
+        <div class="file-item active" data-file="html" onclick="switchTab('html')"><i class="fab fa-html5 html-icon"></i> index.html</div>
+        <div class="file-item" data-file="css" onclick="switchTab('css')"><i class="fab fa-css3-alt css-icon"></i> style.css</div>
+        <div class="file-item" data-file="js" onclick="switchTab('js')"><i class="fab fa-js js-icon"></i> script.js</div>
+      </div>
+    </div>
+    <!-- Features Panel -->
+    <div id="panelFeatures" style="display:none;">
+      <div class="side-panel-header">الميزات الذكية <i class="fas fa-magic" style="font-size:12px;color:var(--mauve)"></i></div>
+      <div class="side-panel-content">
+        <div class="feature-section">
+          <h4><i class="fas fa-globe" style="color:var(--blue)"></i> FocusBridge</h4>
+          <div class="feature-toggle" onclick="toggleDomMapping()">
+            <span>DOM-to-Source Mapping</span>
+            <div class="toggle-switch" id="toggleDom"></div>
+          </div>
+          <div class="feature-toggle" onclick="toggleVisualScoping()">
+            <span>Visual Scoping</span>
+            <div class="toggle-switch" id="toggleScope"></div>
+          </div>
+          <div class="feature-toggle" onclick="toggleCogMeter()">
+            <span>Cognitive Load Meter</span>
+            <div class="toggle-switch on" id="toggleCog"></div>
+          </div>
+        </div>
+        <div class="feature-section">
+          <h4><i class="fas fa-brain" style="color:var(--mauve)"></i> CognitiveHarmonizer</h4>
+          <div class="feature-toggle" onclick="toggleZenMode()">
+            <span>Zen Mode الذكي</span>
+            <div class="toggle-switch" id="toggleZen"></div>
+          </div>
+          <div class="feature-toggle" onclick="showCodeChunking()">
+            <span>Code Chunking</span>
+            <div style="font-size:11px;color:var(--accent);cursor:pointer;"><i class="fas fa-arrow-left"></i></div>
+          </div>
+          <div class="feature-toggle" onclick="toggleTapSystem()">
+            <span>Tap System</span>
+            <div class="toggle-switch on" id="toggleTap"></div>
+          </div>
+          <div class="feature-toggle" onclick="toggleTapShortcuts()">
+            <span>Tap Shortcuts Reference</span>
+            <div style="font-size:11px;color:var(--accent);cursor:pointer;"><i class="fas fa-arrow-left"></i></div>
+          </div>
+          <div class="feature-toggle" onclick="showMentalModel()">
+            <span>Mental Model Visualizer</span>
+            <div style="font-size:11px;color:var(--accent);cursor:pointer;"><i class="fas fa-arrow-left"></i></div>
+          </div>
+        </div>
+        <div class="feature-section">
+          <h4><i class="fas fa-heartbeat" style="color:var(--red)"></i> كشف التوتر</h4>
+          <div class="feature-toggle" onclick="toggleStressDetection()">
+            <span>Stress-Aware Assistant</span>
+            <div class="toggle-switch on" id="toggleStress"></div>
+          </div>
+          <div style="padding:8px 10px;">
+            <div style="font-size:11px;color:var(--subtext);margin-bottom:6px;">مستوى التوتر الحالي</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="flex:1;height:6px;background:var(--surface);border-radius:3px;overflow:hidden;">
+                <div id="stressFill" style="height:100%;width:20%;background:var(--green);border-radius:3px;transition:.5s;"></div>
+              </div>
+              <span id="stressPercent" style="font-size:11px;color:var(--green);">20%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Search Panel -->
+    <div id="panelSearch" style="display:none;">
+      <div class="side-panel-header">بحث</div>
+      <div class="side-panel-content">
+        <input type="text" placeholder="ابحث في الكود..." style="width:100%;padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:Cairo;font-size:12px;outline:none;" id="searchInput" oninput="searchInCode(this.value)">
+        <div id="searchResults" style="margin-top:8px;"></div>
+      </div>
+    </div>
+    <!-- Settings Panel -->
+    <div id="panelSettings" style="display:none;">
+      <div class="side-panel-header">الإعدادات</div>
+      <div class="side-panel-content">
+        <div class="feature-toggle"><span>حجم الخط</span>
+          <select id="fontSizeSelect" onchange="changeFontSize(this.value)" style="background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;">
+            <option value="12">12px</option><option value="14" selected>14px</option><option value="16">16px</option><option value="18">18px</option><option value="20">20px</option>
+          </select>
+        </div>
+        <div class="feature-toggle"><span>السمة</span>
+          <select id="themeSelect" onchange="changeTheme(this.value)" style="background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;">
+            <option value="material-darker">Material Darker</option><option value="dracula">Dracula</option><option value="monokai">Monokai</option>
+          </select>
+        </div>
+        <div class="feature-toggle"><span>التفاف النص</span>
+          <div class="toggle-switch on" id="toggleWrap" onclick="toggleWordWrap()"></div>
+        </div>
+        <div class="feature-toggle"><span>الأرقام الجانبية</span>
+          <div class="toggle-switch on" id="toggleLineNum" onclick="toggleLineNumbers()"></div>
+        </div>
+      </div>
+    </div>
+    <!-- Git Panel -->
+    <div id="panelGit" style="display:none;">
+      <div class="side-panel-header">التحكم بالمصادر</div>
+      <div class="side-panel-content" style="text-align:center;padding-top:40px;">
+        <i class="fas fa-code-branch" style="font-size:40px;color:var(--surface2);margin-bottom:12px;"></i>
+        <p style="font-size:12px;color:var(--subtext);">لم يتم تهيئة مستودع Git</p>
+      </div>
+    </div>
+  </div>
+  <!-- EDITOR + PREVIEW -->
+  <div class="editor-area">
+    <div class="tabs-bar">
+      <div class="tab active" data-tab="html" onclick="switchTab('html')"><i class="fab fa-html5" style="color:#e34c26"></i> index.html <span class="close-tab"><i class="fas fa-times"></i></span></div>
+      <div class="tab" data-tab="css" onclick="switchTab('css')"><i class="fab fa-css3-alt" style="color:#264de4"></i> style.css <span class="close-tab"><i class="fas fa-times"></i></span></div>
+      <div class="tab" data-tab="js" onclick="switchTab('js')"><i class="fab fa-js" style="color:#f7df1e"></i> script.js <span class="close-tab"><i class="fas fa-times"></i></span></div>
+    </div>
+    <div class="editors-wrapper">
+      <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative;">
+        <div class="editor-pane active" id="pane-html"><textarea id="editor-html"></textarea></div>
+        <div class="editor-pane" id="pane-css"><textarea id="editor-css"></textarea></div>
+        <div class="editor-pane" id="pane-js"><textarea id="editor-js"></textarea></div>
+      </div>
+      <div class="resizer" id="resizer"></div>
+      <div class="preview-panel" id="previewPanel" style="width:45%;">
+        <div class="preview-header">
+          <i class="fas fa-globe" style="color:var(--accent);font-size:12px;"></i>
+          <input class="preview-url" value="localhost:3000/index.html" readonly>
+          <button class="preview-tool-btn" onclick="toggleDomTreePanel()" id="domTreeBtn" title="شجرة DOM"><i class="fas fa-sitemap"></i> <span class="preview-btn-label">شجرة DOM</span></button>
+          <button class="preview-tool-btn" onclick="toggleStyleReview()" id="styleReviewBtn" title="مراجعة التصميم"><i class="fas fa-magic"></i> <span class="preview-btn-label">مراجعة التصميم</span></button>
+          <button class="preview-tool-btn" onclick="toggleConsolePanel()" id="consolePanelBtn" title="الكونسول"><i class="fas fa-terminal"></i> <span class="preview-btn-label">Console</span></button>
+          <button class="toolbar-btn" onclick="runPreview()" style="padding:2px 6px;"><i class="fas fa-sync-alt"></i></button>
+        </div>
+        <div style="flex:1;display:flex;position:relative;overflow:hidden;">
+          <iframe class="preview-iframe" id="previewFrame" style="flex:1;height:100%;min-width:0;"></iframe>
+          <div class="dom-tree-container" id="domTreePanel">
+            <div class="tree-header">
+              <h4><i class="fas fa-sitemap"></i> شجرة عناصر DOM</h4>
+              <button class="tree-close" onclick="toggleDomTreePanel()"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="domTreeContent">
+              <div class="dom-tree-hint"><i class="fas fa-mouse-pointer"></i>اضغط على أي عنصر في المتصفح لعرض شجرة DOM الخاصة به</div>
+            </div>
+          </div>
+          <div class="style-review-container" id="styleReviewPanel">
+            <div class="review-header">
+              <h4><i class="fas fa-magic"></i> مراجعة التصميم</h4>
+              <button class="review-close" onclick="toggleStyleReview()"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="styleReviewContent">
+              <div class="dom-tree-hint"><i class="fas fa-mouse-pointer"></i>فعّل وضع الفحص ثم اضغط على أي عنصر</div>
+            </div>
+          </div>
+        </div>
+        <!-- CONSOLE PANEL -->
+        <div class="console-panel" id="consolePanel">
+          <div class="console-header">
+            <div class="console-tabs">
+              <button class="console-tab active" onclick="switchConsoleTab('console')"><i class="fas fa-terminal"></i> Console</button>
+              <button class="console-tab" onclick="switchConsoleTab('styles')"><i class="fas fa-paint-brush"></i> Styles</button>
+            </div>
+            <div class="console-actions">
+              <button class="console-action-btn" onclick="clearConsole()" title="مسح"><i class="fas fa-ban"></i></button>
+              <button class="console-action-btn" onclick="toggleConsolePanel()" title="إغلاق"><i class="fas fa-times"></i></button>
+            </div>
+          </div>
+          <div class="console-body">
+            <div class="console-tab-content active" id="consoleOutput">
+              <div class="console-messages" id="consoleMessages"></div>
+              <div class="console-input-wrapper">
+                <span class="console-prompt">&gt;</span>
+                <input type="text" class="console-input" id="consoleInput" placeholder="اكتب كود JavaScript هنا..." onkeydown="handleConsoleKeydown(event)">
+              </div>
+            </div>
+            <div class="console-tab-content" id="consoleStyles" style="display:none;">
+              <div id="consoleStylesContent" style="overflow-y:auto;flex:1;">
+                <div class="console-styles-hint"><i class="fas fa-mouse-pointer"></i> اضغط على عنصر في المعاينة لتعديل تنسيقاته</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- BOTTOM DASHBOARD PANEL -->
+<div class="bottom-panel" id="bottomPanel">
+  <div class="bottom-panel-header">
+    <h3><i class="fas fa-chart-line" style="color:var(--accent)"></i> Developer Monitoring Dashboard</h3>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div class="bottom-panel-tabs">
+        <button class="bp-tab active">نظرة عامة</button>
+        <button class="bp-tab">سجل التوتر</button>
+      </div>
+      <button class="toolbar-btn" onclick="toggleDashboard()" style="padding:2px 8px;"><i class="fas fa-times"></i></button>
+    </div>
+  </div>
+  <div class="bottom-panel-body">
+    <div class="dashboard-grid">
+      <div class="dash-card">
+        <h4><i class="fas fa-keyboard" style="color:var(--blue)"></i> سرعة الكتابة</h4>
+        <div class="big-value" style="color:var(--blue);" id="wpmValue">0</div>
+        <div class="sub-label">WPM - كلمة في الدقيقة</div>
+        <canvas id="wpmChart" style="margin-top:8px;"></canvas>
+      </div>
+      <div class="dash-card">
+        <h4><i class="fas fa-heartbeat" style="color:var(--red)"></i> مستوى التوتر</h4>
+        <div class="big-value" id="stressValue" style="color:var(--green);">منخفض</div>
+        <div class="sub-label" id="stressDetail">معدل الأخطاء: 0%</div>
+        <canvas id="stressChart" style="margin-top:8px;"></canvas>
+      </div>
+      <div class="dash-card">
+        <h4><i class="fas fa-brain" style="color:var(--mauve)"></i> العبء المعرفي</h4>
+        <div class="big-value" style="color:var(--mauve);" id="cogValue">32%</div>
+        <div class="sub-label">مستوى تعقيد الكود الحالي</div>
+        <div style="margin-top:12px;">
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--subtext);margin-bottom:4px;"><span>HTML</span><span id="cogHtml">25%</span></div>
+          <div style="height:4px;background:var(--bg-primary);border-radius:2px;margin-bottom:6px;"><div id="cogHtmlBar" style="height:100%;width:25%;background:var(--peach);border-radius:2px;transition:.5s;"></div></div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--subtext);margin-bottom:4px;"><span>CSS</span><span id="cogCss">30%</span></div>
+          <div style="height:4px;background:var(--bg-primary);border-radius:2px;margin-bottom:6px;"><div id="cogCssBar" style="height:100%;width:30%;background:var(--blue);border-radius:2px;transition:.5s;"></div></div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--subtext);margin-bottom:4px;"><span>JS</span><span id="cogJs">40%</span></div>
+          <div style="height:4px;background:var(--bg-primary);border-radius:2px;"><div id="cogJsBar" style="height:100%;width:40%;background:var(--yellow);border-radius:2px;transition:.5s;"></div></div>
+        </div>
+      </div>
+      <div class="dash-card">
+        <h4><i class="fas fa-bug" style="color:var(--peach)"></i> تقرير الجلسة</h4>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:11px;color:var(--subtext);">ضغطات المفاتيح</span>
+            <span style="font-size:14px;font-weight:700;font-family:'JetBrains Mono';color:var(--text);" id="keystrokeCount">0</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:11px;color:var(--subtext);">الأخطاء الكتابية</span>
+            <span style="font-size:14px;font-weight:700;font-family:'JetBrains Mono';color:var(--red);" id="errorCount">0</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:11px;color:var(--subtext);">وقت الكتابة</span>
+            <span style="font-size:14px;font-weight:700;font-family:'JetBrains Mono';color:var(--teal);" id="typingTime">00:00</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:11px;color:var(--subtext);">معدل الأخطاء</span>
+            <span style="font-size:14px;font-weight:700;font-family:'JetBrains Mono';color:var(--green);" id="errorRate">0%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- STATUS BAR -->
+<div class="status-bar">
+  <div class="status-item"><i class="fas fa-code-branch"></i> main</div>
+  <div class="status-item"><i class="fas fa-check-circle" style="color:var(--green)"></i> <span id="errorStatus">0 أخطاء</span></div>
+  <div class="status-item"><i class="fas fa-info-circle"></i> <span id="cursorPos">Ln 1, Col 1</span></div>
+  <div class="status-right">
+    <div class="cognitive-meter" title="العبء المعرفي">
+      <i class="fas fa-brain" style="color:var(--mauve);font-size:10px;"></i>
+      <div class="cognitive-bar"><div class="cognitive-fill" id="cogFill" style="width:30%;background:var(--green);"></div></div>
+      <span style="font-size:10px;" id="cogLabel">30%</span>
+    </div>
+    <div class="stress-indicator stress-low" id="stressIndicator">
+      <i class="fas fa-heart"></i>
+      <span id="stressText">هادئ</span>
+    </div>
+    <div class="status-item"><span id="langLabel">HTML</span></div>
+    <div class="status-item">UTF-8</div>
+  </div>
+</div>
+<!-- MENTAL MODEL MODAL -->
+<div class="modal-overlay" id="mentalModelModal">
+  <div class="modal" style="width:950px;max-height:85vh;">
+    <div class="modal-header">
+      <h3><i class="fas fa-project-diagram" style="color:var(--mauve)"></i> خريطة ذهنية - Mind Map</h3>
+      <button class="modal-close" onclick="closeMentalModel()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body" style="display:flex;gap:0;padding:0;overflow:hidden;max-height:calc(85vh - 60px);">
+      <div class="mm-tree-panel" id="mentalModelContent">
+        <div class="mm-empty"><i class="fas fa-spinner fa-spin"></i><p>جاري التحليل...</p></div>
+      </div>
+      <div class="mm-detail-panel" id="mentalModelDetail">
+        <div class="mm-detail-empty"><i class="fas fa-hand-pointer"></i><p>اختر عنصرًا من الشجرة لعرض تنسيقاته ومعاينته</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- CODE CHUNKING MODAL -->
+<div class="modal-overlay" id="codeChunkingModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3><i class="fas fa-puzzle-piece" style="color:var(--teal)"></i> Code Chunking Assistant</h3>
+      <button class="modal-close" onclick="closeCodeChunking()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body" id="chunkingBody"></div>
+  </div>
+</div>
+<!-- NEW FILE MODAL -->
+<div class="modal-overlay" id="newFileModal">
+  <div class="modal" style="width:420px;">
+    <div class="modal-header">
+      <h3><i class="fas fa-file-circle-plus" style="color:var(--green)"></i> إنشاء ملف جديد</h3>
+      <button class="modal-close" onclick="closeNewFileDialog()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body" style="padding:20px;">
+      <label style="font-size:12px;color:var(--subtext);display:block;margin-bottom:8px;">اسم الملف مع الامتداد</label>
+      <input type="text" id="newFileName" placeholder="example.html" style="width:100%;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'JetBrains Mono';font-size:13px;outline:none;margin-bottom:16px;" onkeydown="if(event.key==='Enter')createNewFile()">
+      <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button onclick="closeNewFileDialog()" style="padding:8px 20px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);cursor:pointer;font-family:Cairo;font-size:12px;">إلغاء</button>
+        <button onclick="createNewFile()" style="padding:8px 20px;background:var(--accent);border:none;border-radius:6px;color:var(--bg-primary);cursor:pointer;font-family:Cairo;font-size:12px;font-weight:700;">إنشاء <i class="fas fa-plus"></i></button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- TAP SYSTEM INDICATOR -->
+<div class="tap-indicator" id="tapIndicator"></div>
+<!-- TAP SHORTCUTS MODAL -->
+<div class="modal-overlay tap-shortcuts-modal" id="tapShortcutsModal">
+  <div class="modal" style="width:860px;max-height:85vh;">
+    <div class="modal-header">
+      <h3><i class="fas fa-hand-pointer" style="color:var(--accent)"></i> Tap System - &#x0627;&#x062E;&#x062A;&#x0635;&#x0627;&#x0631;&#x0627;&#x062A; HTML</h3>
+      <button class="modal-close" onclick="closeTapShortcuts()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body" style="padding:0;overflow-y:auto;">
+      <div class="tap-shortcuts-body">
+        <!-- Levels Info -->
+        <div class="tap-levels-info">
+          <h4><i class="fas fa-layer-group" style="color:var(--mauve)"></i> &#x0646;&#x0638;&#x0627;&#x0645; &#x0627;&#x0644;&#x0636;&#x063A;&#x0637;&#x0627;&#x062A; &#x0627;&#x0644;&#x062B;&#x0644;&#x0627;&#x062B;&#x064A; (&#x0627;&#x0633;&#x062A;&#x062E;&#x062F;&#x0645; Alt &#x0628;&#x062F;&#x0644; Fn)</h4>
+          <div class="tap-levels-grid">
+            <div class="tap-level-card">
+              <div class="tap-level-num">1&times;</div>
+              <h5>&#x062A;&#x0627;&#x062C; &#x0628;&#x0633;&#x064A;&#x0637;</h5>
+              <p>&#x0636;&#x063A;&#x0637;&#x0629; &#x0648;&#x0627;&#x062D;&#x062F;&#x0629;</p>
+              <code>&lt;div&gt;&lt;/div&gt;</code>
+            </div>
+            <div class="tap-level-card">
+              <div class="tap-level-num">2&times;</div>
+              <h5>&#x062A;&#x0627;&#x062C; + class</h5>
+              <p>&#x0636;&#x063A;&#x0637;&#x062A;&#x064A;&#x0646; &#x0633;&#x0631;&#x064A;&#x0639;&#x062A;&#x064A;&#x0646;</p>
+              <code>&lt;div class=""&gt;
+  
+&lt;/div&gt;</code>
+            </div>
+            <div class="tap-level-card">
+              <div class="tap-level-num">3&times;</div>
+              <h5>&#x062A;&#x0627;&#x062C; + class + id</h5>
+              <p>&#x062B;&#x0644;&#x0627;&#x062B; &#x0636;&#x063A;&#x0637;&#x0627;&#x062A;</p>
+              <code>&lt;div class="" id=""&gt;
+  
+&lt;/div&gt;</code>
+            </div>
+          </div>
+        </div>
+        <!-- HTML Structure -->
+        <div class="tap-shortcut-group">
+          <h4><i class="fas fa-code" style="color:var(--peach)"></i> HTML Structure</h4>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>D</kbd></span><span class="tap-result">&lt;div&gt;</span></div>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>S</kbd></span><span class="tap-result">&lt;section&gt;</span></div>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>A</kbd></span><span class="tap-result">&lt;article&gt;</span></div>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>N</kbd></span><span class="tap-result">&lt;nav&gt;</span></div>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>H</kbd></span><span class="tap-result">&lt;header&gt;</span></div>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>F</kbd></span><span class="tap-result">&lt;footer&gt;</span></div>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>M</kbd></span><span class="tap-result">&lt;main&gt;</span></div>
+        </div>
+        <!-- Content -->
+        <div class="tap-shortcut-group">
+          <h4><i class="fas fa-paragraph" style="color:var(--blue)"></i> Content</h4>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>P</kbd></span><span class="tap-result">&lt;p&gt;</span></div>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>1~6</kbd></span><span class="tap-result">&lt;h1&gt; ~ &lt;h6&gt;</span></div>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>B</kbd></span><span class="tap-result">&lt;button&gt;</span></div>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>I</kbd></span><span class="tap-result">&lt;input&gt;</span></div>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>L</kbd></span><span class="tap-result">&lt;label&gt;</span></div>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>U</kbd></span><span class="tap-result">&lt;ul&gt; &gt; &lt;li&gt;</span></div>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>O</kbd></span><span class="tap-result">&lt;ol&gt; &gt; &lt;li&gt;</span></div>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>T</kbd></span><span class="tap-result">&lt;table&gt;</span></div>
+        </div>
+        <!-- Media -->
+        <div class="tap-shortcut-group">
+          <h4><i class="fas fa-image" style="color:var(--green)"></i> Media</h4>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>G</kbd></span><span class="tap-result">&lt;img&gt;</span></div>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>V</kbd></span><span class="tap-result">&lt;video&gt;</span></div>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>K</kbd></span><span class="tap-result">&lt;a&gt; (link)</span></div>
+        </div>
+        <!-- Utilities -->
+        <div class="tap-shortcut-group">
+          <h4><i class="fas fa-tools" style="color:var(--yellow)"></i> Utilities</h4>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>W</kbd></span><span class="tap-result">wrapper div</span></div>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>C</kbd></span><span class="tap-result">container div</span></div>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>X</kbd></span><span class="tap-result">flex container</span></div>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>Z</kbd></span><span class="tap-result">grid container</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- NOTIFICATION -->
+<div class="notification" id="notification"><i class="fas fa-info-circle"></i><span id="notifText"></span></div>
+<!-- FOOTER -->
+<div class="app-footer">
+  <p>&copy; 2026 جميع الحقوق محفوظة للمهندس أحمد عصام عاشور</p>
+</div>
+<!-- SCRIPTS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/html-hint.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/css-hint.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/javascript-hint.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/xml-hint.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closetag.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchtags.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/foldcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/foldgutter.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/brace-fold.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/xml-fold.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/comment-fold.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/search/search.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/search/searchcursor.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/search/match-highlighter.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/dialog/dialog.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/selection/active-line.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/comment/comment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/keymap/sublime.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
