@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -373,7 +373,7 @@
 <div class="modal-overlay tap-shortcuts-modal" id="tapShortcutsModal">
   <div class="modal" style="width:860px;max-height:85vh;">
     <div class="modal-header">
-      <h3><i class="fas fa-hand-pointer" style="color:var(--accent)"></i> Tap System - &#x0627;&#x062E;&#x062A;&#x0635;&#x0627;&#x0631;&#x0627;&#x062A; HTML</h3>
+      <h3><i class="fas fa-hand-pointer" style="color:var(--accent)"></i> Tap System - &#x0627;&#x062E;&#x062A;&#x0635;&#x0627;&#x0631;&#x0627;&#x062A; HTML &amp; CSS</h3>
       <button class="modal-close" onclick="closeTapShortcuts()"><i class="fas fa-times"></i></button>
     </div>
     <div class="modal-body" style="padding:0;overflow-y:auto;">
@@ -443,6 +443,98 @@
           <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>C</kbd></span><span class="tap-result">container div</span></div>
           <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>X</kbd></span><span class="tap-result">flex container</span></div>
           <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>Z</kbd></span><span class="tap-result">grid container</span></div>
+        </div>
+        <!-- CSS MODE DIVIDER -->
+        <div class="tap-levels-info" style="background:linear-gradient(135deg,rgba(38,77,228,.08),rgba(137,180,250,.08));">
+          <h4><i class="fab fa-css3-alt" style="color:#264de4"></i> CSS Mode - &#x0627;&#x062E;&#x062A;&#x0635;&#x0627;&#x0631;&#x0627;&#x062A; CSS (&#x062A;&#x0639;&#x0645;&#x0644; &#x062A;&#x0644;&#x0642;&#x0627;&#x0626;&#x064A;&#x0627;&#x064B; &#x0639;&#x0646;&#x062F; &#x0641;&#x062A;&#x062D; &#x0645;&#x0644;&#x0641; CSS)</h4>
+          <div class="tap-levels-grid">
+            <div class="tap-level-card">
+              <div class="tap-level-num" style="color:var(--green)">1&times;</div>
+              <h5>Property &#x0641;&#x0627;&#x0636;&#x064A;&#x0629;</h5>
+              <p>&#x0636;&#x063A;&#x0637;&#x0629; &#x0648;&#x0627;&#x062D;&#x062F;&#x0629;</p>
+              <code>display: flex;</code>
+            </div>
+            <div class="tap-level-card">
+              <div class="tap-level-num" style="color:var(--accent)">2&times;</div>
+              <h5>Property + &#x0642;&#x064A;&#x0645;&#x0629; &#x0634;&#x0627;&#x0626;&#x0639;&#x0629;</h5>
+              <p>&#x0636;&#x063A;&#x0637;&#x062A;&#x064A;&#x0646;</p>
+              <code>display: flex;
+align-items: center;</code>
+            </div>
+            <div class="tap-level-card">
+              <div class="tap-level-num" style="color:var(--mauve)">3&times;</div>
+              <h5>Shorthand &#x0643;&#x0627;&#x0645;&#x0644;</h5>
+              <p>&#x062B;&#x0644;&#x0627;&#x062B; &#x0636;&#x063A;&#x0637;&#x0627;&#x062A;</p>
+              <code>display: flex;
+flex-direction: row;
+align-items: center;
+justify-content: center;
+gap: ;</code>
+            </div>
+          </div>
+        </div>
+        <!-- CSS Layout -->
+        <div class="tap-shortcut-group" style="border-color:rgba(38,77,228,.3);">
+          <h4><i class="fas fa-th-large" style="color:#89b4fa"></i> Layout</h4>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>F</kbd></span><span class="tap-result">display: flex</span></div>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>G</kbd></span><span class="tap-result">display: grid</span></div>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>P</kbd></span><span class="tap-result">position</span></div>
+        </div>
+        <!-- CSS Spacing -->
+        <div class="tap-shortcut-group" style="border-color:rgba(38,77,228,.3);">
+          <h4><i class="fas fa-arrows-alt" style="color:var(--teal)"></i> Spacing</h4>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>M</kbd></span><span class="tap-result">margin</span></div>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>D</kbd></span><span class="tap-result">padding</span></div>
+        </div>
+        <!-- CSS Sizing -->
+        <div class="tap-shortcut-group" style="border-color:rgba(38,77,228,.3);">
+          <h4><i class="fas fa-expand-arrows-alt" style="color:var(--peach)"></i> Sizing</h4>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>W</kbd></span><span class="tap-result">width</span></div>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>H</kbd></span><span class="tap-result">height</span></div>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>S</kbd></span><span class="tap-result">width + height</span></div>
+        </div>
+        <!-- CSS Visual -->
+        <div class="tap-shortcut-group" style="border-color:rgba(38,77,228,.3);">
+          <h4><i class="fas fa-palette" style="color:var(--mauve)"></i> Visual</h4>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>B</kbd></span><span class="tap-result">background</span></div>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>C</kbd></span><span class="tap-result">color</span></div>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>O</kbd></span><span class="tap-result">opacity</span></div>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>R</kbd></span><span class="tap-result">border-radius</span></div>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>E</kbd></span><span class="tap-result">border</span></div>
+        </div>
+        <!-- CSS Typography -->
+        <div class="tap-shortcut-group" style="border-color:rgba(38,77,228,.3);">
+          <h4><i class="fas fa-font" style="color:var(--sky)"></i> Typography</h4>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>T</kbd></span><span class="tap-result">font-size</span></div>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>Y</kbd></span><span class="tap-result">font-weight</span></div>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>L</kbd></span><span class="tap-result">line-height</span></div>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>A</kbd></span><span class="tap-result">text-align</span></div>
+        </div>
+        <!-- CSS Effects -->
+        <div class="tap-shortcut-group" style="border-color:rgba(38,77,228,.3);">
+          <h4><i class="fas fa-magic" style="color:var(--yellow)"></i> Effects</h4>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>X</kbd></span><span class="tap-result">box-shadow</span></div>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>Z</kbd></span><span class="tap-result">z-index</span></div>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>N</kbd></span><span class="tap-result">transition</span></div>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>K</kbd></span><span class="tap-result">transform</span></div>
+        </div>
+        <!-- CSS Selectors -->
+        <div class="tap-shortcut-group" style="border-color:rgba(38,77,228,.3);">
+          <h4><i class="fas fa-bullseye" style="color:var(--green)"></i> Selectors</h4>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>.</kbd></span><span class="tap-result">.class { }</span></div>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>3</kbd></span><span class="tap-result">#id { }</span></div>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>2</kbd></span><span class="tap-result">@media query</span></div>
+          <div class="tap-shortcut-item"><span class="tap-key"><kbd>Alt</kbd><span>+</span><kbd>;</kbd></span><span class="tap-result">:pseudo-class</span></div>
+        </div>
+        <!-- Class to CSS Feature -->
+        <div class="tap-levels-info" style="background:linear-gradient(135deg,rgba(166,227,161,.06),rgba(137,180,250,.06));">
+          <h4><i class="fas fa-mouse-pointer" style="color:var(--green)"></i> &#x0645;&#x064A;&#x0632;&#x0629; &#x0625;&#x0636;&#x0627;&#x0641;&#x064A;&#x0629;: Class &#x2192; CSS</h4>
+          <p style="font-size:12px;color:var(--subtext);line-height:1.8;">
+            <kbd style="background:var(--bg-primary);border:1px solid var(--border);border-radius:4px;padding:2px 8px;font-family:'JetBrains Mono';font-size:11px;color:var(--accent);">LShift</kbd>
+            <span style="color:var(--subtext);margin:0 4px;">+</span>
+            <kbd style="background:var(--bg-primary);border:1px solid var(--border);border-radius:4px;padding:2px 8px;font-family:'JetBrains Mono';font-size:11px;color:var(--accent);">Right Click</kbd>
+            <span style="margin-right:8px;">&#x0639;&#x0644;&#x0649; &#x0627;&#x0633;&#x0645; class &#x0641;&#x064A; HTML &#x2192; &#x064A;&#x0646;&#x0634;&#x0626; &#x0627;&#x0644;&#x0643;&#x0644;&#x0627;&#x0633; &#x0641;&#x064A; &#x0645;&#x0644;&#x0641; CSS &#x062A;&#x0644;&#x0642;&#x0627;&#x0626;&#x064A;&#x0627;&#x064B;. &#x0644;&#x0648; &#x0627;&#x0644;&#x0643;&#x0644;&#x0627;&#x0633; &#x0645;&#x0648;&#x062C;&#x0648;&#x062F; &#x0645;&#x0633;&#x0628;&#x0642;&#x0627;&#x064B;&#x060C; &#x064A;&#x0646;&#x0642;&#x0644;&#x0643; &#x0644;&#x0647; &#x0641;&#x064A; &#x0627;&#x0644;&#x0645;&#x062D;&#x0631;&#x0631;.</span>
+          </p>
         </div>
       </div>
     </div>
