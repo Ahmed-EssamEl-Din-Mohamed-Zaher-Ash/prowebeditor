@@ -2059,3 +2059,434 @@ if (_origCreateNewFile) {
     });
   }, 2000);
 }
+
+
+// ============== CSS TAP SYSTEM ==============
+// Context-sensitive: Alt+Key = CSS snippets in CSS mode, HTML snippets in HTML mode
+
+var cssTapSnippets = {
+  // -- LAYOUT --
+  'KeyF': {
+    label: 'flex',
+    single: 'display: flex;',
+    double: 'display: flex;\nalign-items: center;',
+    triple: 'display: flex;\nflex-direction: |row;\nalign-items: center;\njustify-content: center;\ngap: ;'
+  },
+  'KeyG': {
+    label: 'grid',
+    single: 'display: grid;',
+    double: 'display: grid;\ngrid-template-columns: repeat(|3, 1fr);',
+    triple: 'display: grid;\ngrid-template-columns: repeat(|3, 1fr);\ngrid-template-rows: auto;\ngap: ;'
+  },
+  'KeyP': {
+    label: 'position',
+    single: 'position: |;',
+    double: 'position: absolute;\ntop: 0;\nleft: 0;',
+    triple: 'position: absolute;\ntop: |;\nright: ;\nbottom: ;\nleft: ;'
+  },
+  // -- SPACING --
+  'KeyM': {
+    label: 'margin',
+    single: 'margin: |;',
+    double: 'margin: 0 auto;',
+    triple: 'margin-top: |;\nmargin-right: ;\nmargin-bottom: ;\nmargin-left: ;'
+  },
+  'KeyD': {
+    label: 'padding',
+    single: 'padding: |;',
+    double: 'padding: 1rem 2rem;',
+    triple: 'padding-top: |;\npadding-right: ;\npadding-bottom: ;\npadding-left: ;'
+  },
+  // -- SIZING --
+  'KeyW': {
+    label: 'width',
+    single: 'width: |;',
+    double: 'width: 100%;',
+    triple: 'width: |;\nmin-width: ;\nmax-width: ;'
+  },
+  'KeyH': {
+    label: 'height',
+    single: 'height: |;',
+    double: 'height: 100vh;',
+    triple: 'height: |;\nmin-height: ;\nmax-height: ;'
+  },
+  'KeyS': {
+    label: 'size (w+h)',
+    single: 'width: |;\nheight: ;',
+    double: 'width: 100%;\nheight: 100%;',
+    triple: 'width: |;\nheight: ;\naspect-ratio: ;'
+  },
+  // -- VISUAL --
+  'KeyB': {
+    label: 'background',
+    single: 'background-color: |;',
+    double: "background: linear-gradient(|135deg, , );",
+    triple: "background-image: url('|');\nbackground-size: cover;\nbackground-position: center;\nbackground-repeat: no-repeat;"
+  },
+  'KeyC': {
+    label: 'color',
+    single: 'color: |;',
+    double: 'color: #|;',
+    triple: 'color: |;\nopacity: ;'
+  },
+  'KeyO': {
+    label: 'opacity',
+    single: 'opacity: |;',
+    double: 'opacity: 0.5;',
+    triple: 'opacity: |;\nvisibility: ;\npointer-events: ;'
+  },
+  'KeyR': {
+    label: 'border-radius',
+    single: 'border-radius: |;',
+    double: 'border-radius: 8px;',
+    triple: 'border-radius: | 0 0 0;'
+  },
+  'KeyE': {
+    label: 'border',
+    single: 'border: |;',
+    double: 'border: 1px solid |;',
+    triple: 'border-top: |;\nborder-right: ;\nborder-bottom: ;\nborder-left: ;'
+  },
+  // -- TYPOGRAPHY --
+  'KeyT': {
+    label: 'font-size',
+    single: 'font-size: |;',
+    double: 'font-size: 16px;',
+    triple: 'font-size: |;\nfont-family: ;\nletter-spacing: ;'
+  },
+  'KeyY': {
+    label: 'font-weight',
+    single: 'font-weight: |;',
+    double: 'font-weight: 700;',
+    triple: 'font-weight: |;\nfont-style: ;\ntext-transform: ;'
+  },
+  'KeyL': {
+    label: 'line-height',
+    single: 'line-height: |;',
+    double: 'line-height: 1.6;',
+    triple: 'line-height: |;\nletter-spacing: ;\nword-spacing: ;'
+  },
+  'KeyA': {
+    label: 'text-align',
+    single: 'text-align: |;',
+    double: 'text-align: center;',
+    triple: 'text-align: |;\ntext-decoration: ;\ntext-transform: ;'
+  },
+  // -- EFFECTS --
+  'KeyX': {
+    label: 'box-shadow',
+    single: 'box-shadow: |;',
+    double: 'box-shadow: 0 2px 8px rgba(0,0,0,0.15);',
+    triple: 'box-shadow: 0 |4px 16px rgba(0,0,0,0.1);'
+  },
+  'KeyZ': {
+    label: 'z-index',
+    single: 'z-index: |;',
+    double: 'z-index: 10;',
+    triple: 'z-index: |;\nposition: relative;\nisolation: isolate;'
+  },
+  'KeyN': {
+    label: 'transition',
+    single: 'transition: | 0.3s ease;',
+    double: 'transition: all 0.3s ease;',
+    triple: 'transition: | 0.3s ease, opacity 0.3s ease;'
+  },
+  'KeyK': {
+    label: 'transform',
+    single: 'transform: |;',
+    double: 'transform: translateX(|0);',
+    triple: 'transform: translate(|0, 0) rotate(0deg) scale(1);'
+  },
+  // -- SELECTORS --
+  'Period': {
+    label: '.class',
+    single: '.| {\n  \n}',
+    double: '.| {\n  display: flex;\n  align-items: center;\n}',
+    triple: '.| {\n  \n}\n\n.|:hover {\n  \n}'
+  },
+  'Digit3': {
+    label: '#id',
+    single: '#| {\n  \n}',
+    double: '#| {\n  display: flex;\n  align-items: center;\n}',
+    triple: '#| {\n  width: 100%;\n  max-width: |;\n  margin: 0 auto;\n}'
+  },
+  'Digit2': {
+    label: '@media',
+    single: '@media (max-width: |768px) {\n  \n}',
+    double: '@media (max-width: |768px) {\n  .container {\n    \n  }\n}',
+    triple: '@media (max-width: |1024px) {\n  \n}\n\n@media (max-width: 768px) {\n  \n}\n\n@media (max-width: 480px) {\n  \n}'
+  },
+  'Semicolon': {
+    label: ':pseudo',
+    single: '&:|hover {\n  \n}',
+    double: '&:hover {\n  |\n}',
+    triple: '&:hover {\n  |\n}\n\n&:focus {\n  \n}\n\n&:active {\n  \n}'
+  }
+};
+
+// Tap state for CSS (separate from HTML)
+var cssTapState = { lastCode: null, count: 0, timer: null, timeout: 400 };
+
+// Detect current editor mode
+function getTapEditorMode() {
+  // Check active tab first
+  if (activeTab === 'css') return 'css';
+  if (activeTab === 'js') return 'js';
+  if (activeTab === 'html') {
+    // Smart context: check if cursor is inside <style> tag
+    var cm = editors.html;
+    if (cm) {
+      var cursor = cm.getCursor();
+      var content = cm.getValue();
+      var pos = cm.indexFromPos(cursor);
+      var before = content.substring(0, pos);
+      var styleOpenCount = (before.match(/<style/gi) || []).length;
+      var styleCloseCount = (before.match(/<\/style/gi) || []).length;
+      if (styleOpenCount > styleCloseCount) return 'css';
+    }
+    return 'html';
+  }
+  // Custom file tabs - detect by extension
+  if (activeTab && activeTab.endsWith && activeTab.endsWith('.css')) return 'css';
+  if (activeTab && activeTab.endsWith && activeTab.endsWith('.js')) return 'js';
+  return 'html';
+}
+
+// Show CSS tap indicator
+function showCssTapIndicator(label, level) {
+  var indicator = document.getElementById('tapIndicator');
+  if (!indicator) return;
+  var levelNames = { single: '\u0661\xD7 property', double: '\u0662\xD7 \u0645\u0639 \u0642\u064A\u0645\u0629', triple: '\u0663\xD7 \u0643\u0627\u0645\u0644' };
+  var levelIcons = { single: '\u2460', double: '\u2461', triple: '\u2462' };
+  indicator.innerHTML = '<div class="tap-ind-icon css-tap-icon">' + levelIcons[level] + '</div>' +
+    '<div class="tap-ind-info"><span class="tap-ind-tag css-tap-tag">' + label + '</span>' +
+    '<span class="tap-ind-level">' + levelNames[level] + '</span>' +
+    '<span class="tap-mode-badge">CSS</span></div>';
+  indicator.className = 'tap-indicator show tap-level-' + level + ' tap-css-mode';
+  clearTimeout(indicator._ht);
+  indicator._ht = setTimeout(function() { indicator.classList.remove('show'); }, 2000);
+}
+
+function showCssTapCounter(label, count) {
+  var indicator = document.getElementById('tapIndicator');
+  if (!indicator) return;
+  var dots = '';
+  for (var i = 1; i <= 3; i++) dots += (i <= count ? '\u25CF' : '\u25CB');
+  indicator.innerHTML = '<div class="tap-ind-icon tap-counting css-tap-icon">' + count + '</div>' +
+    '<div class="tap-ind-info"><span class="tap-ind-tag css-tap-tag">' + label + '</span>' +
+    '<span class="tap-ind-dots">' + dots + '</span>' +
+    '<span class="tap-mode-badge">CSS</span></div>';
+  indicator.className = 'tap-indicator show tap-counting-active tap-css-mode';
+}
+
+// Insert CSS snippet with proper indentation
+function insertCssTapSnippet(code, level) {
+  var snippet = cssTapSnippets[code];
+  if (!snippet) return;
+  var cm = editors[activeTab];
+  if (!cm) return;
+  var text = snippet[level];
+  var cursor = cm.getCursor();
+  var currentLine = cm.getLine(cursor.line);
+  var indent = currentLine.match(/^(\s*)/)[1];
+  var lines = text.split('\n');
+  var insertText = lines.map(function(l, i) { return i === 0 ? l : indent + l; }).join('\n');
+  var markerPos = insertText.indexOf('|');
+  var cleanText = insertText.replace(/\|/g, '');
+  cm.replaceRange(cleanText, cursor);
+  if (markerPos >= 0) {
+    // recalculate after removing all pipes
+    var textBeforeMarker = insertText.substring(0, markerPos).replace(/\|/g, '');
+    var beforeLines = textBeforeMarker.split('\n');
+    var targetLine = cursor.line + beforeLines.length - 1;
+    var targetCh = beforeLines.length === 1 ? cursor.ch + beforeLines[0].length : beforeLines[beforeLines.length - 1].length;
+    cm.setCursor({ line: targetLine, ch: targetCh });
+  }
+  cm.focus();
+  showCssTapIndicator(snippet.label, level);
+}
+
+// Process CSS tap
+function processCssTap(code) {
+  var snippet = cssTapSnippets[code];
+  if (!snippet) return;
+  if (cssTapState.lastCode === code) { cssTapState.count++; } else { cssTapState.count = 1; cssTapState.lastCode = code; }
+  clearTimeout(cssTapState.timer);
+  if (cssTapState.count >= 3) {
+    insertCssTapSnippet(code, 'triple');
+    cssTapState.count = 0; cssTapState.lastCode = null;
+    return;
+  }
+  showCssTapCounter(snippet.label, cssTapState.count);
+  cssTapState.timer = setTimeout(function() {
+    if (cssTapState.count === 1) insertCssTapSnippet(code, 'single');
+    else if (cssTapState.count === 2) insertCssTapSnippet(code, 'double');
+    cssTapState.count = 0; cssTapState.lastCode = null;
+  }, cssTapState.timeout);
+}
+
+// Override handleTapSystemKey to be mode-aware
+var _origHandleTapSystemKey = handleTapSystemKey;
+handleTapSystemKey = function(e) {
+  if (!tapSystemEnabled || !e.altKey) return;
+  var mode = getTapEditorMode();
+
+  if (mode === 'css') {
+    if (cssTapSnippets[e.code]) {
+      e.preventDefault();
+      e.stopPropagation();
+      processCssTap(e.code);
+      return false;
+    }
+  } else if (mode === 'html') {
+    if (tapSnippets[e.code]) {
+      e.preventDefault();
+      e.stopPropagation();
+      processTap(e.code);
+      return false;
+    }
+  }
+  // JS mode: no tap snippets
+};
+
+// Re-bind tap system to all editors with new handler
+Object.values(editors).forEach(function(ed) {
+  // Remove old and add new
+  ed.off('keydown', _origHandleTapSystemKey);
+  // The old binding is via anonymous function wrapping handleTapSystemKey,
+  // so we need to add a fresh one. The old ones will call the now-overridden function.
+});
+
+
+// ============== LSHIFT + RIGHT CLICK: CLASS TO CSS ==============
+
+(function initClassToCSSFeature() {
+
+  // Extract class name at cursor position in HTML code
+  function getClassAtPosition(cm, pos) {
+    var line = cm.getLine(pos.line);
+    if (!line) return null;
+
+    // Find all class="..." or class='...' on this line
+    var classRegex = /class\s*=\s*["']([^"']*)["']/gi;
+    var match;
+    while ((match = classRegex.exec(line)) !== null) {
+      var classStart = match.index + match[0].indexOf(match[1]);
+      var classEnd = classStart + match[1].length;
+
+      // Check if click position is within the class attribute value
+      if (pos.ch >= classStart && pos.ch <= classEnd) {
+        var classes = match[1].trim().split(/\s+/).filter(function(c) { return c; });
+        if (classes.length === 0) return null;
+
+        // Find which specific class the cursor is on
+        var offset = pos.ch - classStart;
+        var currentPos = 0;
+        for (var i = 0; i < classes.length; i++) {
+          var idx = match[1].indexOf(classes[i], currentPos);
+          if (offset >= idx && offset <= idx + classes[i].length) {
+            return classes[i];
+          }
+          currentPos = idx + classes[i].length;
+        }
+        // Default to first class
+        return classes[0];
+      }
+    }
+    return null;
+  }
+
+  // Check if class exists in CSS
+  function classExistsInCSS(className) {
+    var cssCode = editors.css.getValue();
+    var escapedName = className.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    var regex = new RegExp('\\.' + escapedName + '\\s*[{,:\\[]');
+    return regex.test(cssCode);
+  }
+
+  // Add class to CSS editor
+  function addClassToCSS(className) {
+    var cm = editors.css;
+    var cssCode = cm.getValue();
+    var newRule = '\n\n.' + className + ' {\n  \n}';
+    var lastLine = cm.lastLine();
+    var lastLineContent = cm.getLine(lastLine);
+    cm.replaceRange(newRule, { line: lastLine, ch: lastLineContent.length });
+
+    // Switch to CSS tab and position cursor inside the rule
+    switchTab('css');
+    var totalLines = cm.lineCount();
+    // Cursor on the empty line inside the new rule (2nd to last line)
+    cm.setCursor({ line: totalLines - 2, ch: 2 });
+    cm.focus();
+    showNotification('\u062A\u0645 \u0625\u0646\u0634\u0627\u0621 .' + className + ' \u0641\u064A CSS', 'success');
+  }
+
+  // Bind to HTML editor
+  function bindClassToCSS(cm) {
+    // Use mousedown to detect Shift+Right click
+    var wrapper = cm.getWrapperElement();
+    wrapper.addEventListener('mousedown', function(e) {
+      // LShift + Right mouse button (button === 2)
+      if (e.shiftKey && e.button === 2) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Get position from click coordinates
+        var pos = cm.coordsChar({ left: e.clientX, top: e.clientY });
+        var className = getClassAtPosition(cm, pos);
+
+        if (className) {
+          if (classExistsInCSS(className)) {
+            // Class exists - go to it in CSS
+            var cssCode = editors.css.getValue();
+            var lines = cssCode.split('\n');
+            for (var i = 0; i < lines.length; i++) {
+              if (lines[i].indexOf('.' + className) !== -1) {
+                switchTab('css');
+                editors.css.setCursor({ line: i, ch: 0 });
+                editors.css.scrollIntoView({ line: i, ch: 0 }, 100);
+                editors.css.focus();
+                showNotification('.' + className + ' \u0645\u0648\u062C\u0648\u062F \u0628\u0627\u0644\u0641\u0639\u0644 - \u0627\u0644\u0633\u0637\u0631 ' + (i + 1), 'info');
+                break;
+              }
+            }
+          } else {
+            addClassToCSS(className);
+          }
+        } else {
+          showNotification('\u0636\u0639 \u0627\u0644\u0645\u0624\u0634\u0631 \u0639\u0644\u0649 \u0627\u0633\u0645 class \u062F\u0627\u062E\u0644 class=""', 'warning');
+        }
+        return false;
+      }
+    });
+
+    // Prevent context menu on Shift+Right click
+    wrapper.addEventListener('contextmenu', function(e) {
+      if (e.shiftKey) {
+        e.preventDefault();
+        return false;
+      }
+    });
+  }
+
+  // Bind to the default HTML editor
+  bindClassToCSS(editors.html);
+
+  // Also bind to any custom HTML editors created later
+  var _origCreateFile = createNewFile;
+  createNewFile = function() {
+    _origCreateFile.apply(this, arguments);
+    // Check if newly created file is HTML
+    Object.keys(editors).forEach(function(key) {
+      var ed = editors[key];
+      if (!ed._classToCSSBound && (key.endsWith('.html') || key.endsWith('.htm') || key === 'html')) {
+        bindClassToCSS(ed);
+        ed._classToCSSBound = true;
+      }
+    });
+  };
+
+  editors.html._classToCSSBound = true;
+})();
+
