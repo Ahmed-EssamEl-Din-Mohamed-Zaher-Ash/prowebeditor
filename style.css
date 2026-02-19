@@ -594,3 +594,34 @@ body.zen-mode .editor-area{border-radius:0;}
   .tap-levels-grid{grid-template-columns:1fr;}
   .tap-indicator{bottom:36px;right:10px;min-width:150px;padding:10px 14px;}
 }
+
+
+/* ====== CSS TAP SYSTEM STYLES ====== */
+.tap-css-mode .tap-ind-icon{
+  background:rgba(38,77,228,.15);color:#264de4;
+}
+.tap-css-mode.tap-level-single .tap-ind-icon{background:rgba(166,227,161,.15);color:var(--green);}
+.tap-css-mode.tap-level-double .tap-ind-icon{background:rgba(38,77,228,.15);color:#89b4fa;}
+.tap-css-mode.tap-level-triple .tap-ind-icon{background:rgba(203,166,247,.15);color:var(--mauve);}
+.tap-css-mode.tap-counting-active .tap-ind-icon{
+  background:rgba(38,77,228,.15);color:#264de4;
+  animation:tapPulse .4s ease;
+}
+.css-tap-tag{color:var(--sky) !important;}
+.tap-mode-badge{
+  display:inline-block;
+  padding:1px 8px;
+  border-radius:4px;
+  font-size:9px;
+  font-weight:700;
+  font-family:'JetBrains Mono',monospace;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  background:rgba(38,77,228,.2);
+  color:#89b4fa;
+  margin-top:2px;
+}
+.tap-css-mode .tap-mode-badge{
+  background:rgba(38,77,228,.2);color:#89b4fa;
+}
+
